@@ -108,3 +108,24 @@ anacoda prompt에서 scrapy project 만들고 실행
 
 # 코드 작성 후 실행
 > scrapy crawl [bot_name]
+
+
+---django project---
+1. 프로젝트 생성 : django-admin startproject djangobookmark
+2. 마이크레이션 : python manage.py migrate
+3. superuser 생성 : python manage.py createsuperuser
+4. 어플리케이션 생성 : python manage.py startapp bookmarkap
+5. 마이그레이션 : python manage.py makemigrations
+6. 서버 작동 : python manage.py runserver 호스트번호(없을시 자동 8000)
+
+
+DB 확인
+1. python manage.py dbshell
+
+- .table = DB에 있는 테이블 보여줌
+- select * from bookmarkap_bookmark; -> bookmarkap_bookmark의 모든 데이터를 선택하여 보여줌
+- PRAGMA table_info(bookmarkap_bookmark); -> bookmarkap_bookmark 테이블의 정보를 보여줌(PRAGMA 해야함)
+- select * from bookmarkap_bookmark where id = 1 -> id가 1인 bookmarkap_bookmark 데이터를 선택함
+- select id, modify_date from blog_posts; => blog_posts의 정보들 중 id와 modify_date만 보여줌
+- update blog_posts set modify_date=datetime(modify_date,'-3 month') where id=1; 
+-> blog_posts의 id=1인 데이터의 modify_date를 현재 날짜보다 3달 앞당긴 날짜로 바꿈
