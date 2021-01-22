@@ -5,7 +5,7 @@ app_name = 'blog'
 
 urlpatterns = [
     # /blog/
-    path('', PostLV.as_view(), name='post_list'),
+    path('', PostLV.as_view(), name='index'),
 
     # /blog/post
     path('post/', PostLV.as_view(), name='post_list'),
@@ -27,4 +27,7 @@ urlpatterns = [
 
     # /today/ -> http://localhost:8000/blog/today/
     path('today/', PostTAV.as_view(), name='post_today_archive'),
+
+    # /search/ -> http://localhost:8000/blog/search/
+    path('search/', SearchFormView.as_view(), name='search'),
 ]

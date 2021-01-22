@@ -40,3 +40,6 @@ pip install django
 	테이블 내용을 열람하고 수정하는 기능 제공하는 사이트
 	user 및 group 테이블 관리 - settings.py에 django.contrib.auth 어플리케이션 등록
 	사용자가 비즈니스 로직 개발에 필요한 테이블 관리(CRUD)
+
+
+API vs Framework vs Platform vs Library???
