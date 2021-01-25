@@ -4,13 +4,15 @@ from selenium.webdriver.common.keys import Keys
 path = "C:\\Users\\jslee\\Desktop\\cloud-service-mycode\\selenium\\webdriver\\chromedriver.exe"
 driver = webdriver.Chrome(path)
 
+# url 주소를 브라우저에 띄우기
 driver.get("https://www.facebook.com/")
 
 elem_email = driver.find_element_by_id("email")
-elem_email.send_keys('jslee6091@naver.com')
+elem_email.send_keys('facebook email')
 elem_pass = driver.find_element_by_id("pass")
-elem_pass.send_keys('vpdltmqnrWkdWkdWkd')
+elem_pass.send_keys('facebook pw')
 
+# Enter 누르기 수행
 elem_pass.send_keys(Keys.RETURN)
 
 # Xpath를 통해 웹사이트 주소 얻어오기
