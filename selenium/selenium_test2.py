@@ -22,5 +22,5 @@ friends_a = driver.find_element_by_xpath('//*[@id="mount_0_0"]/div/div[1]/div[1]
 print('friends_a : ', friends_a.get_attribute('href'))
 
 # 해당 웹사이트 접속
-# driver.get(profile_a.get_attribute('href'))
-driver.get(friends_a.get_attribute('href'))
+driver.get(profile_a.get_attribute('href'))
+# driver.get(friends_a.get_attribute('href'))
