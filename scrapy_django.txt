@@ -59,9 +59,27 @@ scrapy shell
 # 해당 웹사이트의 전체 소스 출력
 >>> print(response.text)
 
-# 웹사이트의 문서 추출
-# 이때 xpath 값의 패턴을 입력하면 해당 페이지의 모든 기사 내용 추출
+# 웹사이트의 문서 추출 - html소스의 해당 element문장을 그대로 추출
 >>>response.xpath('xpath 값')
+결과 예시 : [<Selector xpath='//*[@id="content"]/div/div[1]/ul/li[1]/a/div[2]/strong' data='<strong class="title">이마트는 왜 프로야구에 뛰어...'>]
+
+# 주의) text가 있는 element를 copy 해야함. 그렇지 않으면 text 추출 불가능
+
+
+# 원하는 element의 text만 추출 - html소스의 text만 추출한다.
+>>>response.xpath('xpath 값/text()')
+결과 예시 : [<Selector xpath='//*[@id="content"]/div/div[1]/ul/li[1]/a/div[2]/strong/text()' data='이마트는 왜 프로야구에 뛰어들었나?'>]
+
+# 원하는 element의 text만 추출 - html 소스의 text만 추출하여 리스트에 담는다.
+>>>response.xpath('xpath 값/text()').extract()
+결과 예시 : ['이마트는 왜 프로야구에 뛰어들었나?']
+
+# xpath 값의 패턴을 입력하여 해당 페이지의 모든 기사 내용 추출
+>>> response.xpath('xpath패턴').extract()
+결과 예시 : ['이마트는 왜 프로야구에 뛰어들었나?', '"푸이그 야구 안 해도 5년은 잘 살겠지만, 계약했으면" 美 매체', 
+	'[GOAL LIVE] ‘기 성용 코너킥 골’ FC서울, 연습경기에서 2-0 승리', 'SK, 2021년 제주도 서귀포 스프링캠프 실시...선수 43명 명단 확정', 
+	'정찬성 "한 달만 20kg 쪘다...오르테가에 패배 후 폭식"', "'바이퍼' 박도현의 미스터리...LPL서 '환골탈태'"]
+
 
 # 기사의 소속 뉴스 회사 이름만 추출
 response.css('.writing::text').extract()
