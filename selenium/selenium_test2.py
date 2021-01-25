@@ -8,9 +8,9 @@ driver = webdriver.Chrome(path)
 driver.get("https://www.facebook.com/")
 
 elem_email = driver.find_element_by_id("email")
-elem_email.send_keys('facebook email')
+elem_email.send_keys('jslee6091@naver.com')
 elem_pass = driver.find_element_by_id("pass")
-elem_pass.send_keys('facebook pw')
+elem_pass.send_keys('vpdltmqnrWkdWkdWkd')
 
 # Enter 누르기 수행
 elem_pass.send_keys(Keys.RETURN)
@@ -22,5 +22,5 @@ friends_a = driver.find_element_by_xpath('//*[@id="mount_0_0"]/div/div[1]/div[1]
 print('friends_a : ', friends_a.get_attribute('href'))
 
 # 해당 웹사이트 접속
-driver.get(profile_a.get_attribute('href'))
-# driver.get(friends_a.get_attribute('href'))
+# driver.get(profile_a.get_attribute('href'))
+driver.get(friends_a.get_attribute('href'))
