@@ -11,7 +11,5 @@ class MyfirstscraperItem(scrapy.Item):
     # name = scrapy.Field()
     
     title = scrapy.Field()
-    score = scrapy.Field()
-    review = scrapy.Field()
     writer = scrapy.Field()
-    date = scrapy.Field()
+    preview = scrapy.Field()

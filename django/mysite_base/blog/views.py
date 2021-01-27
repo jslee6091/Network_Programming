@@ -14,8 +14,12 @@ from django.shortcuts import render
 class PostLV(ListView):
     model = Post
     template_name = "blog/post_all.html"
-    context_object_name = "posts" # object_list
-
+    
+    # object_list의 context name 설정 
+    # 안하면 model name에서 _list가 추가된 형태로 자동 지정
+    context_object_name = "posts"
+    
+    # paginating a Listview
     paginate_by = 3
 
 class PostDV(DetailView):

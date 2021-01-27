@@ -35,5 +35,5 @@ class MoviesBotsSpider(scrapy.Spider):
             item['writer'] = row[3]
             item['date'] = row[4]
 
-            yield(item)
+            yield item
 
