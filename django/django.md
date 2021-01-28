@@ -136,32 +136,74 @@ API vs Framework vs Platform vs Library???
 
   - DB에 있는 테이블 보여줌
 
+  
+  
 - ```
   $ select * from bookmarkap_bookmark;
   ```
 
   - bookmarkap_bookmark의 모든 데이터를 선택하여 보여줌
 
+  
+  
 -  ```
   $ PRAGMA table_info(bookmarkap_bookmark);
-   ```
+  ```
 
   - bookmarkap_bookmark 테이블의 정보를 보여줌(PRAGMA 해야함)
 
+  
+  
 - ```
   $ select * from bookmarkap_bookmark where id = 1
   ```
 
   - id가 1인 bookmarkap_bookmark 데이터를 선택함
 
+  
+  
 - ```
   $ select id, modify_date from blog_posts;
   ```
 
   - blog_posts의 정보들 중 id와 modify_date만 보여줌
 
+  
+  
 - ```
   $ update blog_posts set modify_date=datetime(modify_date,'-3 month') where id=1;
   ```
 
   - blog_posts의 id=1인 데이터의 modify_date를 현재 날짜보다 3달 앞당긴 날짜로 바꿈
+  
+  
+
+- ```
+  $ delete from user;
+  ```
+
+  - user의 모든 데이터 삭제
+
+
+
+- ```
+  $ delete from user where 조건식;
+  ```
+
+  - 조건식을 만족하는 user의 데이터만 삭제
+
+
+
+- ```
+  $ alter table old_name rename to new_name;
+  ```
+
+  - table 이름을 기존의 old_name 에서 new_name으로 바꾸기
+
+
+
+- ```
+  $ create table table_name (column1, column2, ...);
+  ```
+
+  - 이름과 컬럼을 지정하여 새 table 만들기
