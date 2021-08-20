@@ -1,8 +1,13 @@
-# 설치 프로그램
+### Network Programming Study & Project
 
-1. PyCharm (https://www.jetbrains.com/ko-kr/pycharm/)
-2. Visual Studio Code (https://code.visualstudio.com/)
-3. Postman (https://www.postman.com/)
-4. TeamViewer (https://www.teamviewer.com/)
+> TCP/IP programming
 
-![image-20210120100200832](README.assets/image-20210120100200832.png)
+
+
+1. Project
+   - 기간 : 2020.05 ~ 2020.06
+   - 주관 : 광운대학교 네트워크 프로그래밍 전공수업
+   - 주제 : TCP/IP 프로토콜과 소켓을 활용한 채팅 프로그램 개발
+
+2. Study
+   - 추가 보충 학습
