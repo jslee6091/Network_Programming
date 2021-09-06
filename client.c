@@ -28,7 +28,6 @@ int main(int argc, char *argv[]) {
 		return 1;
 	}
 
-	server_sockfd = socket(AF_INET, SOCK_STREAM, 0);
 	serveraddr.sin_family = AF_INET;
 	serveraddr.sin_addr.s_addr = inet_addr(argv[1]);
 	serveraddr.sin_port = htons(PORTNUM);
