@@ -31,7 +31,7 @@ int main(int argc, char *argv[]) {
 	serveraddr.sin_family = AF_INET;
 	serveraddr.sin_addr.s_addr = inet_addr(argv[1]);
 	serveraddr.sin_port = htons(PORTNUM);
-	client_len = sizeof(serveraddr)
+	client_len = sizeof(serveraddr);
 
 	if (connect(server_sockfd, (struct sockaddr *)&serveraddr, client_len) < 0)
 	{
