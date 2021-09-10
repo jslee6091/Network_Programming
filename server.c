@@ -58,7 +58,7 @@ int main(int argc, char *argv[]) {
 			return 1;
 		}
 		else{
-			printf("accept success\n");			
+			printf("accept success\n");	
 		}
 	
 		pid = fork();
@@ -69,8 +69,8 @@ int main(int argc, char *argv[]) {
 					perror("read error\n");
 					exit(0);			
 				}
-				printf("%s",buf);
-				if(strncmp(buf,"exit",4)==0){
+				printf("received message : %s",buf);
+				if(strcmp(buf,"exit")==0 || strcmp(buf,"")==0){
 					exit(0);
 				}
 			}
@@ -79,5 +79,6 @@ int main(int argc, char *argv[]) {
 		}
 		
 	}
+	close(listen_fd);
 	return 0;
 }

@@ -20,7 +20,7 @@ int main(int argc, char *argv[]) {
 	if(3!=argc){
 		fprintf(stderr, "usage: %s <server> <ID>\n", argv[0]);
 		exit(1);
-    }
+	}
 	printf("%s\n%s\n%s\n", argv[0], argv[1], argv[2]);
 
 	if ((server_sockfd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
@@ -41,10 +41,10 @@ int main(int argc, char *argv[]) {
 	else {
 		printf("connect success\n");
 	}
-	memset(buf, 0x00, MAXLINE); 		
-		
+	memset(buf, 0x00, MAXLINE); 
+	
 	pid=fork();
-		
+	
 	if(pid ==0){
 		while(1){
 			fgets(buf,sizeof(buf),stdin);
@@ -54,8 +54,9 @@ int main(int argc, char *argv[]) {
 				perror("write error : ");
 				return 1;
 			}
+			printf("%s : %s", argv[2], buf);
 			
-			if((strncmp,"exit",4) == 0){
+			if((strcmp,"exit") == 0){
 				exit(0);
 			}
 		}
@@ -71,9 +72,9 @@ int main(int argc, char *argv[]) {
 			printf("%s : %s",argv[2], buf);
 			if(strncmp(buf,"exit",4) == 0){
 				exit(0);
-			}	
-		}	
-	}	
+			}
+		}
+	}
 	close(server_sockfd);
 	return 0;
 }
