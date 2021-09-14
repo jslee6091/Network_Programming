@@ -14,8 +14,9 @@ int main(int argc, char *argv[]) {
 	int listen_fd, client_fd;
 	pid_t pid;
 	socklen_t addrlen;
-	int readn;
+	int readn, readname;
 	char buf[MAXLINE];
+	char exits[] = "exit";
 	struct sockaddr_in client_addr, server_addr;
 
 	if( (listen_fd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
@@ -48,10 +49,10 @@ int main(int argc, char *argv[]) {
 	signal(SIGCHLD, SIG_IGN); //to predict zombie process
 
 	memset(buf, 0x00, MAXLINE);
-	while(1){	
+	while(1){
+		printf("client waiting\n");
 		addrlen = sizeof(client_addr);
 		client_fd = accept(listen_fd, (struct sockaddr *)&client_addr, &addrlen);
-	 		
 		if(client_fd == -1)
 		{
 			printf("accept error\n");
@@ -60,18 +61,29 @@ int main(int argc, char *argv[]) {
 		else{
 			printf("accept success\n");	
 		}
-	
+
+		printf("client accepted!, client_fd : %d\n", client_fd);
+
+		if((readname=read(client_fd, buf, MAXLINE))<=0){
+			perror("read error\n");
+			exit(1);
+		}
+		printf("client name : %s\n", buf); 
+
 		pid = fork();
+
+		// child process
 		if(pid == 0)
 		{
 			while(1){
-				if((readn=read(client_fd, buf, MAXLINE))<0){
+				if((readn=read(client_fd, buf, MAXLINE))<=0){
 					perror("read error\n");
-					exit(0);			
+					exit(1);
 				}
 				printf("received message : %s",buf);
-				if(strcmp(buf,"exit")==0 || strcmp(buf,"")==0){
-					exit(0);
+				if(strcmp(buf, exits) == 0){
+					printf("this is exit\n");
+					exit(1);
 				}
 			}
 			close(client_fd);
