@@ -52,6 +52,7 @@ int main(int argc, char *argv[]) {
 	
 	pid=fork();
 	
+	// child process : send message to server
 	if(pid ==0){
 		printf("I'm child process!, pid : %d\n", pid);
 		
@@ -63,13 +64,14 @@ int main(int argc, char *argv[]) {
 				perror("write error : ");
 				return 1;
 			}
-			printf("sending %s : %s", argv[2], buf);
+			printf("%s : %s", argv[2], buf);
 			
-			if((strcmp,"exit") == 0){
+			if(strcmp(buf, "exit\n") == 0){
 				exit(1);
 			}
 		}
-		exit(0);
+		close(server_sockfd);
+		return 1;
 	}
 	// parent process : receive message from server
 	else if(pid>0){
@@ -81,11 +83,12 @@ int main(int argc, char *argv[]) {
 				exit(1);
 			}
 			printf("reading %s : %s",argv[2], buf);
-			if(strncmp(buf,"exit",4) == 0){
+			if(strcmp(buf, "exit\n") == 0){
 				exit(1);
 			}
 		}
+		exit(1);
 	}
-	close(server_sockfd);
+	// close(server_sockfd);
 	return 0;
 }
