@@ -16,7 +16,8 @@ int main(int argc, char *argv[]) {
 	socklen_t addrlen;
 	int readn, readname;
 	int usernumber = 0;
-	char* userList[10];
+	int client_fd_list[10];
+	char userList[10][MAXLINE];
 	char userEnter[MAXLINE];
 	char buf[MAXLINE];
 	char exits[] = "exit\n";
@@ -56,6 +57,7 @@ int main(int argc, char *argv[]) {
 		printf("client waiting\n");
 		addrlen = sizeof(client_addr);
 		client_fd = accept(listen_fd, (struct sockaddr *)&client_addr, &addrlen);
+
 		if(client_fd == -1)
 		{
 			printf("accept error\n");
@@ -73,8 +75,8 @@ int main(int argc, char *argv[]) {
 			int writeOver = write(client_fd, message, sizeof(message));
 			if(writeOver <= 0){
 				perror("write error : ");
-				return 1;
 			}
+			return -1;
 		}
 
 		// read name of client
@@ -82,8 +84,13 @@ int main(int argc, char *argv[]) {
 			perror("read error\n");
 			exit(1);
 		}
-		userList[usernumber] = userEnter;
+
+		// register username and client_socket_number(client_fd)
+		strcpy(userList[usernumber], userEnter);
+		client_fd_list[usernumber]= client_fd;
 		printf("client name : %s\n", userList[usernumber]); 
+		printf("client fd : %d\n", client_fd_list[usernumber]); 
+		printf("user num : %d\n", usernumber);
 		usernumber++;
 
 		pid = fork();
@@ -92,17 +99,32 @@ int main(int argc, char *argv[]) {
 		if(pid == 0)
 		{
 			while(1){
+				// receive message from clients
 				if((readn=read(client_fd, buf, MAXLINE))<=0){
 					perror("read error\n");
 					exit(1);
 				}
 
-				int writemsg = write(client_fd, buf, MAXLINE);
-				if(writemsg <= 0){
-					perror("write wrong\n");
-					exit(1);
+				for(int i = 0; i < usernumber; i++){
+					printf("user client list : %s\n", userList[i]);
+					printf("client fd list : %d\n", client_fd_list[i]);
 				}
-				printf("%s : %s", userList[usernumber - 1], buf);
+
+				//char messages[MAXLINE] = strcat(userList[usernumber], " : ");
+				//messages = strcat(messages, buf);
+
+				//printf(strcat(userList[usernumber], " : "));
+
+				// write message to other clients
+				for(int i = 0; i < usernumber; i++){
+					int writemsg = write(client_fd_list[i], buf, MAXLINE);
+					if(writemsg <= 0){
+						perror("write wrong\n");
+						exit(1);
+					}
+					printf("%s : %s", userList[usernumber - 1], buf);
+				}
+
 				if(strcmp(buf, exits) == 0){
 					printf("%s is exit\n", userList[usernumber - 1]);
 					int writeExit = write(client_fd, exits, sizeof(exits));
@@ -116,7 +138,6 @@ int main(int argc, char *argv[]) {
 			usernumber--;
 			return 0;
 		}
-		
 	}
 	close(listen_fd);
 	return 0;

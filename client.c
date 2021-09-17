@@ -64,7 +64,7 @@ int main(int argc, char *argv[]) {
 				perror("write error : ");
 				return 1;
 			}
-			printf("%s : %s", argv[2], buf);
+			printf("sending %s : %s", argv[2], buf);
 			
 			if(strcmp(buf, "exit\n") == 0){
 				exit(1);
