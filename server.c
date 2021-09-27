@@ -60,7 +60,15 @@ int main(int argc, char *argv[]) {
 		printf("listen success\n");
 	}	
 
-	signal(SIGCHLD, SIG_IGN); //to predict zombie process
+	// predict zombie process
+	signal(SIGCHLD, SIG_IGN);
+
+	// make shared memory
+	int shmid = shmget((key_t)1234, sizeof(struct userinfo), 0666|IPC_CREAT);
+	if(shmid == -1){
+		perror("shared memory failed : ");
+		exit(1);
+	}
 
 	memset(buf, 0x00, MAXLINE);
 	while(1){
@@ -78,13 +86,6 @@ int main(int argc, char *argv[]) {
 		}
 
 		printf("client accepted!, client_fd : %d\n", client_fd);
-
-		// make shared memory
-		int shmid = shmget((key_t)1234, sizeof(struct userinfo), 0666|IPC_CREAT);
-		if(shmid == -1){
-			perror("shared memory failed : ");
-			exit(1);
-		}
 
 		// attach to the shared memory
 		shared_memory = shmat(shmid, (void*)0, 0);
@@ -117,19 +118,27 @@ int main(int argc, char *argv[]) {
 		strcpy(users->userList[users->usernumber], userEnter);
 		users->usernumber++;
 
-		//strcpy(userList[usernumber], userEnter);
-		//client_fd_list[usernumber]= client_fd;
 		printf("client name : %s\n", users->userList[users->usernumber-1]); 
 		printf("client fd : %d\n", users->client_fd_list[users->usernumber-1]); 
 		printf("user num : %d\n", users->usernumber);
-		//usernumber++;
 
+		// make another process
 		pid = fork();
 
 		// child process
 		if(pid == 0)
 		{
 			while(1){
+				// access shared memory to update chatting users
+				shared_memory = shmat(shmid, (void*)0, 0);
+				if(shared_memory == (void*)-1){
+					perror("shmat failed : ");
+					exit(1);
+				}
+
+				// read user list from shared memory
+				users = (struct userinfo*)shared_memory;
+
 				// receive message from clients
 				if((readn=read(client_fd, buf, MAXLINE))<=0){
 					perror("read error\n");
@@ -140,11 +149,6 @@ int main(int argc, char *argv[]) {
 					printf("user client list : %s\n", users->userList[i]);
 					printf("client fd list : %d\n", users->client_fd_list[i]);
 				}
-
-				//char messages[MAXLINE] = strcat(userList[usernumber], " : ");
-				//messages = strcat(messages, buf);
-
-				//printf(strcat(userList[usernumber], " : "));
 
 				// write message to other clients
 				for(int i = 0; i < users->usernumber; i++){
