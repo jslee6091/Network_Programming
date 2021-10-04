@@ -25,9 +25,6 @@ int main(int argc, char *argv[]) {
 	int readn, readname;
 	struct userinfo *users;
 	void* shared_memory = (void*)0;
-	//int usernumber = 0;
-	//int client_fd_list[10];
-	//char userList[10][MAXLINE];
 	char userEnter[MAXLINE];
 	char buf[MAXLINE];
 	char exits[] = "exit\n";
@@ -65,6 +62,18 @@ int main(int argc, char *argv[]) {
 
 	// make shared memory
 	int shmid = shmget((key_t)1234, sizeof(struct userinfo), 0666|IPC_CREAT);
+
+	// attach to the shared memory
+	shared_memory = shmat(shmid, (void*)0, 0);
+	if(shared_memory == (void*)-1){
+		perror("shmat failed : ");
+		exit(1);
+	}
+	printf("shared_memory : %d\n", shared_memory);
+
+	// wrte or read data to shared memory
+	users = (struct userinfo*)shared_memory;
+
 	if(shmid == -1){
 		perror("shared memory failed : ");
 		exit(1);
@@ -82,20 +91,10 @@ int main(int argc, char *argv[]) {
 			return 1;
 		}
 		else{
-			printf("accept success\n");	
+			printf("accept success\n");
 		}
 
 		printf("client accepted!, client_fd : %d\n", client_fd);
-
-		// attach to the shared memory
-		shared_memory = shmat(shmid, (void*)0, 0);
-		if(shared_memory == (void*)-1){
-			perror("shmat failed : ");
-			exit(1);
-		}
-
-		// wrte or read data to shared memory
-		users = (struct userinfo*)shared_memory;
 
 		// if user number get over the limit, send message to client
 		if(users->usernumber >= 10){
@@ -129,35 +128,31 @@ int main(int argc, char *argv[]) {
 		if(pid == 0)
 		{
 			while(1){
-				// access shared memory to update chatting users
-				shared_memory = shmat(shmid, (void*)0, 0);
-				if(shared_memory == (void*)-1){
-					perror("shmat failed : ");
-					exit(1);
-				}
-
 				// read user list from shared memory
-				users = (struct userinfo*)shared_memory;
+				//users = (struct userinfo*)shared_memory;
 
+				printf("============================\n");
+				
 				// receive message from clients
 				if((readn=read(client_fd, buf, MAXLINE))<=0){
 					perror("read error\n");
 					exit(1);
 				}
+				printf("received message : %s\n", buf);
 
-				for(int i = 0; i < users->usernumber; i++){
-					printf("user client list : %s\n", users->userList[i]);
-					printf("client fd list : %d\n", users->client_fd_list[i]);
-				}
+				printf("usernumber : %d\n", users->usernumber);
 
 				// write message to other clients
 				for(int i = 0; i < users->usernumber; i++){
+					printf("client_fd_list[%d] : %d\n", i, users->client_fd_list[i]);
+					printf("send message : %s\n", buf);
 					int writemsg = write(users->client_fd_list[i], buf, MAXLINE);
 					if(writemsg <= 0){
+						printf("writemsg : %d\n", writemsg);
 						perror("write wrong\n");
 						exit(1);
 					}
-					printf("%s : %s", users->userList[users->usernumber - 1], buf);
+					printf("%s : %s", users->userList[i], buf);
 				}
 
 				if(strcmp(buf, exits) == 0){
@@ -170,6 +165,7 @@ int main(int argc, char *argv[]) {
 				}
 			}
 			close(client_fd);
+			printf("socket closed\n");
 			users->usernumber--;
 			return 0;
 		}
@@ -181,6 +177,16 @@ int main(int argc, char *argv[]) {
 			printf("shared memory removed!\n");
 		}
 	}
+	// close shared memory
+	/*
+	if(shmctl(shmid, IPC_RMID, 0) == -1){
+		printf("shared memory remove failed : ");
+		return -1;
+	}
+	else{
+		printf("shared memory removed!\n");
+	}*/
+
 	close(listen_fd);
 	return 0;
 }
