@@ -62,6 +62,10 @@ int main(int argc, char *argv[]) {
 
 	// make shared memory
 	int shmid = shmget((key_t)1234, sizeof(struct userinfo), 0666|IPC_CREAT);
+	if(shmid == -1){
+		perror("shared memory failed : ");
+		exit(1);
+	}
 
 	// attach to the shared memory
 	shared_memory = shmat(shmid, (void*)0, 0);
@@ -74,18 +78,14 @@ int main(int argc, char *argv[]) {
 	// wrte or read data to shared memory
 	users = (struct userinfo*)shared_memory;
 
-	if(shmid == -1){
-		perror("shared memory failed : ");
-		exit(1);
-	}
-
 	memset(buf, 0x00, MAXLINE);
 	while(1){
 		printf("client waiting\n");
 		addrlen = sizeof(client_addr);
-		client_fd = accept(listen_fd, (struct sockaddr *)&client_addr, &addrlen);
+		int mynumber = users->usernumber;
+		users->client_fd_list[mynumber] = accept(listen_fd, (struct sockaddr *)&client_addr, &addrlen);
 
-		if(client_fd == -1)
+		if(/*client_fd*/users->client_fd_list[mynumber] == -1)
 		{
 			printf("accept error\n");
 			return 1;
@@ -94,12 +94,12 @@ int main(int argc, char *argv[]) {
 			printf("accept success\n");
 		}
 
-		printf("client accepted!, client_fd : %d\n", client_fd);
+		printf("client accepted!, client_fd : %d\n", /*client_fd*/users->client_fd_list[mynumber]);
 
 		// if user number get over the limit, send message to client
 		if(users->usernumber >= 10){
 			char* message = "Number of user is maximum";
-			int writeOver = write(client_fd, message, sizeof(message));
+			int writeOver = write(users->client_fd_list[mynumber], message, sizeof(message));
 			if(writeOver <= 0){
 				perror("write error : ");
 			}
@@ -107,14 +107,15 @@ int main(int argc, char *argv[]) {
 		}
 
 		// read name of client
-		if((readname=read(client_fd, userEnter, sizeof(userEnter)))<=0){
+		if((readname=read(users->client_fd_list[mynumber], userEnter, sizeof(userEnter)))<=0){
 			perror("read error\n");
 			exit(1);
 		}
 
 		// register username and client_socket_number(client_fd)
-		users->client_fd_list[users->usernumber] = client_fd;
+		//users->client_fd_list[users->usernumber] = client_fd;
 		strcpy(users->userList[users->usernumber], userEnter);
+
 		users->usernumber++;
 
 		printf("client name : %s\n", users->userList[users->usernumber-1]); 
@@ -133,14 +134,28 @@ int main(int argc, char *argv[]) {
 
 				printf("============================\n");
 				
+				printf("i'm %d process ! \n", getpid());
+
 				// receive message from clients
-				if((readn=read(client_fd, buf, MAXLINE))<=0){
+				if((readn=read(users->client_fd_list[mynumber]/*client_fd*/, buf, MAXLINE))<=0){
 					perror("read error\n");
 					exit(1);
 				}
 				printf("received message : %s\n", buf);
 
 				printf("usernumber : %d\n", users->usernumber);
+
+				/*
+				shared_memory = shmat(shmid, (void*)0, 0);
+				if(shared_memory == (void*)-1){
+					perror("shmat failed : ");
+					exit(1);
+				}
+				printf("shared_memory : %d\n", shared_memory);
+			
+				// wrte or read data to shared memory
+				users = (struct userinfo*)shared_memory;
+				*/
 
 				// write message to other clients
 				for(int i = 0; i < users->usernumber; i++){
